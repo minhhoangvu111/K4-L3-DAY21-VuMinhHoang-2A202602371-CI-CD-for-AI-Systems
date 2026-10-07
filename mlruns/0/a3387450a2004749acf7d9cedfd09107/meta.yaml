@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/AI%20VinUni/Lab/K4-L3-DAY21-VuMinhHoang-2A202602371-CI-CD-for-AI-Systems/mlruns/0/a3387450a2004749acf7d9cedfd09107/artifacts
+end_time: 1791382776350
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a3387450a2004749acf7d9cedfd09107
+run_name: casual-gnu-132
+run_uuid: a3387450a2004749acf7d9cedfd09107
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791382756525
+status: 3
+tags: []
+user_id: Admin

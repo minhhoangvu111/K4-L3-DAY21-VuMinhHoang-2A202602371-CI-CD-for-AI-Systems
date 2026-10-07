@@ -8,9 +8,6 @@ import os
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, f1_score
 
-# Nguong chat luong cua lab nay la f1_score, KHONG phai accuracy.
-# Ly do: bo du lieu Adult co ty le lop 75/25. Mot mo hinh doan bua
-# "thu nhap thap" cho moi mau da dat accuracy 0.75 ma khong hoc duoc gi.
 F1_THRESHOLD = 0.65
 
 
@@ -20,69 +17,90 @@ def train(
     eval_path: str = "data/holdout.csv",
 ) -> float:
     """
-    Huan luyen mo hinh va ghi nhan ket qua vao MLflow.
+    Huấn luyện mô hình và ghi nhận kết quả vào MLflow.
 
-    Tham so:
-        params     : dict chua cac sieu tham so cho GradientBoostingClassifier.
-        data_path  : duong dan den file du lieu huan luyen.
-        eval_path  : duong dan den file du lieu danh gia (holdout).
+    Tham số:
+        params: dict chứa các siêu tham số cho GradientBoostingClassifier
+        data_path: đường dẫn đến file dữ liệu huấn luyện
+        eval_path: đường dẫn đến file dữ liệu đánh giá
 
-    Tra ve:
-        f1 (float): diem F1 cua lop duong (thu nhap > 50K) tren tap holdout.
+    Trả về:
+        f1 (float): điểm F1 của lớp dương trên tập holdout
     """
 
-    # TODO 1: Doc du lieu huan luyen va danh gia
-    # df_train = ...
-    # df_eval  = ...
+    # TODO 1.6.1: Đọc dữ liệu huấn luyện từ data_path vào DataFrame df_train
+    #   và dữ liệu đánh giá từ eval_path vào DataFrame df_eval.
+    # Gợi ý: sử dụng pd.read_csv(...)
+    df_train = pd.read_csv(data_path)
+    df_eval = pd.read_csv(eval_path)
 
-    # TODO 2: Tach dac trung (X) va nhan (y)
-    # X_train = df_train.drop(columns=["target"])
-    # y_train = ...
-    # X_eval  = ...
-    # y_eval  = ...
+    # TODO 1.6.2: Tách đặc trưng và nhãn.
+    #   X_train, y_train từ df_train (bỏ cột "target")
+    #   X_eval, y_eval từ df_eval (bỏ cột "target")
+    X_train = df_train.drop("target", axis=1)
+    y_train = df_train["target"]
+    X_eval = df_eval.drop("target", axis=1)
+    y_eval = df_eval["target"]
 
+    # TODO 1.6.3: Bắt đầu một MLflow run bằng `with mlflow.start_run():`
+    #   Bên trong block này, thực hiện các bước sau:
     with mlflow.start_run():
+        # TODO 1.6.4: Ghi nhận các siêu tham số vào MLflow.
+        # Gợi ý: mlflow.log_params(params)
+        mlflow.log_params(params)
 
-        # TODO 3: Ghi nhan cac sieu tham so
-        # mlflow.log_params(...)
+        # TODO 1.6.5: Khởi tạo và huấn luyện mô hình GradientBoostingClassifier.
+        # Gợi ý: model = GradientBoostingClassifier(**params, random_state=42)
+        #          model.fit(X_train, y_train)
+        model = GradientBoostingClassifier(**params, random_state=42)
+        model.fit(X_train, y_train)
 
-        # TODO 4: Khoi tao va huan luyen GradientBoostingClassifier
-        # Goi y: su dung random_state=42 de dam bao tinh tai tao
-        # model = GradientBoostingClassifier(...)
-        # model.fit(...)
+        # TODO 1.6.6: Tính f1_score và accuracy trên tập holdout.
+        # Gợi ý: preds = model.predict(X_eval)
+        #          f1  = f1_score(y_eval, preds)        <- lớp dương, KHÔNG dùng average
+        #          acc = accuracy_score(y_eval, preds)
+        preds = model.predict(X_eval)
+        f1 = f1_score(y_eval, preds)
+        acc = accuracy_score(y_eval, preds)
 
-        # TODO 5: Du doan tren tap holdout va tinh chi so
-        # Chu y: f1_score o day tinh cho LOP DUONG (target = 1), khong dung average.
-        # preds = ...
-        # f1    = f1_score(...)
-        # acc   = accuracy_score(...)
+        # TODO 1.6.7: Ghi nhận các chỉ số vào MLflow.
+        # Gợi ý: mlflow.log_metric("f1_score", f1)
+        #          mlflow.log_metric("accuracy", acc)
+        mlflow.log_metric("f1_score", f1)
+        mlflow.log_metric("accuracy", acc)
 
-        # TODO 6: Ghi nhan chi so vao MLflow
-        # mlflow.log_metric("f1_score", ...)
-        # mlflow.log_metric("accuracy", ...)
-        # mlflow.sklearn.log_model(model, "model")
+        # TODO 1.6.8: Log mô hình vào MLflow artifact.
+        # Gợi ý: mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model")
 
-        # TODO 7: In ket qua ra man hinh
-        # print(f"F1: {f1:.4f} | Accuracy: {acc:.4f}")
+        # TODO 1.6.9: In kết quả ra màn hình.
+        # Gợi ý: print(f"F1: {f1:.4f} | Accuracy: {acc:.4f}")
+        print(f"F1: {f1:.4f} | Accuracy: {acc:.4f}")
 
-        # TODO 8: Luu metrics ra file outputs/report.json
-        # File nay duoc doc boi GitHub Actions o Buoc 2
-        # os.makedirs("outputs", exist_ok=True)
-        # with open("outputs/report.json", "w") as f:
-        #     json.dump({"f1_score": f1, "accuracy": acc}, f)
+        # TODO 1.6.10: Lưu metrics ra file outputs/report.json.
+        # File này sẽ được đọc bởi GitHub Actions ở Bước 2.
+        # Gợi ý:
+        #       os.makedirs("outputs", exist_ok=True)
+        #       with open("outputs/report.json", "w") as f:
+        #           json.dump({"f1_score": f1, "accuracy": acc}, f)
+        os.makedirs("outputs", exist_ok=True)
+        with open("outputs/report.json", "w") as f:
+            json.dump({"f1_score": f1, "accuracy": acc}, f)
 
-        # TODO 9: Luu mo hinh ra file models/model.joblib
-        # File nay duoc upload len cloud storage o Buoc 2
-        # os.makedirs("models", exist_ok=True)
-        # joblib.dump(model, "models/model.joblib")
+        # TODO 1.6.11: Lưu mô hình ra file models/model.joblib.
+        # File này sẽ được upload lên cloud storage ở Bước 2.
+        # Gợi ý:
+        #       os.makedirs("models", exist_ok=True)
+        #       joblib.dump(model, "models/model.joblib")
+        os.makedirs("models", exist_ok=True)
+        joblib.dump(model, "models/model.joblib")
 
-        pass  # xoa dong nay sau khi hoan thanh tat ca TODO ben tren
-
-    # TODO 10: Tra ve f1
-    # return f1
+    # TODO 1.6.12: Trả về f1 để các hàm gọi train() có thể đọc kết quả.
+    return f1
 
 
 if __name__ == "__main__":
+    # Đọc siêu tham số từ params.yaml và gọi hàm train()
     with open("params.yaml") as f:
         params = yaml.safe_load(f)
     train(params)

@@ -1,39 +1,33 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from google.cloud import storage
+# Cloud SDK: google-cloud-storage (GCP) | boto3 (AWS) | azure-storage-blob (Azure)
+from google.cloud import storage   # thay bằng SDK của provider đã chọn
 import joblib
 import os
 
 app = FastAPI()
 
+# Đọc tên bucket từ biến môi trường (được đặt trong systemd service)
 ARTIFACT_BUCKET = os.environ["ARTIFACT_BUCKET"]
 MODEL_KEY = "artifacts/current/model.joblib"
 MODEL_PATH = os.path.expanduser("~/models/model.joblib")
 
 
 def download_model():
-    """
-    Tai file model.joblib tu cloud storage ve may khi server khoi dong.
-
-    Ham nay duoc goi mot lan khi module duoc import. Su dung
-    GOOGLE_APPLICATION_CREDENTIALS de xac thuc (duoc dat trong systemd service).
-    """
-    # TODO 1: Tao storage.Client()
-    # client = storage.Client()
-
-    # TODO 2: Lay bucket va blob tuong ung
-    # bucket = client.bucket(ARTIFACT_BUCKET)
-    # blob   = bucket.blob(MODEL_KEY)
-
-    # TODO 3: Tai file model xuong may
-    # blob.download_to_filename(MODEL_PATH)
-
-    # TODO 4: In thong bao thanh cong
-    # print("Model da duoc tai xuong tu cloud storage.")
-
-    pass  # xoa dong nay sau khi hoan thanh tat ca TODO ben tren
+    """Tải file model.joblib từ cloud storage về máy khi server khởi động."""
+    # TODO 2.6.1: Tạo một storage.Client()
+    client = storage.Client()
+    # TODO 2.6.2: Lấy bucket bằng client.bucket(ARTIFACT_BUCKET)
+    bucket = client.bucket(ARTIFACT_BUCKET)
+    # TODO 2.6.3: Lấy blob bằng bucket.blob(MODEL_KEY)
+    blob = bucket.blob(MODEL_KEY)
+    # TODO 2.6.4: Tải file xuống bằng blob.download_to_filename(MODEL_PATH)
+    blob.download_to_filename(MODEL_PATH)
+    # TODO 2.6.5: In thông báo thành công
+    print(f"Model downloaded from gs://{ARTIFACT_BUCKET}/{MODEL_KEY} to {MODEL_PATH}")
 
 
+# Gọi hàm này khi module được import (chạy khi server khởi động)
 download_model()
 model = joblib.load(MODEL_PATH)
 
@@ -44,39 +38,31 @@ class ScoreRequest(BaseModel):
 
 @app.get("/healthz")
 def healthz():
-    """
-    Endpoint kiem tra suc khoe server.
-    GitHub Actions goi endpoint nay sau khi deploy de xac nhan server dang chay.
-
-    Tra ve: {"status": "ok"}
-    """
-    # TODO 5: Tra ve dict {"status": "ok"}
-    pass  # xoa dong nay sau khi hoan thanh
+    """Endpoint kiểm tra sức khỏe server. GitHub Actions dùng endpoint này để xác nhận triển khai thành công."""
+    # TODO 2.6.6: Trả về dict {"status": "ok"}
+    return {"status": "ok"}
 
 
 @app.post("/score")
 def score(req: ScoreRequest):
     """
-    Endpoint suy luan chinh.
+    Endpoint suy luận.
 
-    Dau vao : JSON {"features": [f1, f2, ..., f10]}
-    Dau ra  : JSON {"prediction": <0|1>, "label": <"thu_nhap_thap"|"thu_nhap_cao">}
-
-    Thu tu 10 dac trung (khop voi thu tu trong FEATURE_NAMES cua test):
-        age, workclass, education_num, marital_status, occupation,
-        relationship, sex, capital_gain, capital_loss, hours_per_week
+    Đầu vào: JSON {"features": [f1, f2, ..., f10]}
+    Đầu ra:  JSON {"prediction": <0|1>, "label": <"thu_nhap_thap"|"thu_nhap_cao">}
     """
-    # TODO 6: Kiem tra so luong dac trung.
-    # Neu len(req.features) != 10, raise HTTPException(status_code=400, ...)
+    # TODO 2.6.7: Kiểm tra len(req.features) == 10.
+    #   Nếu không, raise HTTPException(status_code=400, detail="Expected 10 features (adult income)")
+    if len(req.features) != 10:
+        raise HTTPException(status_code=400, detail="Expected 10 features (adult income)")
 
-    # TODO 7: Goi model.predict([req.features]) de lay ket qua du doan.
-    # pred = model.predict(...)
+    # TODO 2.6.8: Gọi model.predict([req.features]) để lấy kết quả dự đoán.
+    prediction = model.predict([req.features])[0]
 
-    # TODO 8: Tra ve dict chua "prediction" (int) va "label" (string).
-    # Nhan tuong ung: 0 -> "thu_nhap_thap", 1 -> "thu_nhap_cao"
-    # return {"prediction": ..., "label": ...}
-
-    pass  # xoa dong nay sau khi hoan thanh tat ca TODO ben tren
+    # TODO 2.6.9: Trả về dict chứa "prediction" (int) và "label" (string).
+    #   Nhãn: 0 -> "thu_nhap_thap", 1 -> "thu_nhap_cao"
+    label = "thu_nhap_thap" if prediction == 0 else "thu_nhap_cao"
+    return {"prediction": int(prediction), "label": label}
 
 
 if __name__ == "__main__":

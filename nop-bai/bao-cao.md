@@ -13,10 +13,10 @@ HƯỚNG DẪN - đọc rồi XÓA TOÀN BỘ các khối chú thích này sau k
 
 | | |
 |---|---|
-| Họ và tên | ___ |
-| MSSV | ___ |
+| Họ và tên | Vũ Minh Hoàng |
+| MSSV | 2A202602371 |
 | Lớp / Khóa | K4 |
-| Repo GitHub | https://github.com/___/___ |
+| Repo GitHub | https://github.com/minhhoangvu111/K4-L3-DAY21-VuMinhHoang-2A202602371-CI-CD-for-AI-Systems |
 | Ngày nộp | ___ |
 
 ---
@@ -27,13 +27,14 @@ HƯỚNG DẪN - đọc rồi XÓA TOÀN BỘ các khối chú thích này sau k
 
 | Lần chạy | n_estimators | learning_rate | max_depth | f1_score | accuracy |
 |---|---|---|---|---|---|
-| 1 | ___ | ___ | ___ | ___ | ___ |
-| 2 | ___ | ___ | ___ | ___ | ___ |
-| 3 | ___ | ___ | ___ | ___ | ___ |
+| 1 | 100 | 0.1 | 3 | 0.7109 | 0.8780 |
+| 2 | 50 | 0.05 | 2 | 0.6051 | 0.8460 |
+| 3 | 200 | 0.1 | 5 | 0.7149 | 0.8740 |
+| 4 | 150 | 0.15 | 4 | 0.7182 | 0.8760 |
 
-**Bộ siêu tham số đã chọn:** `n_estimators=___`, `learning_rate=___`, `max_depth=___`.
+**Bộ siêu tham số đã chọn:** `n_estimators=150`, `learning_rate=0.15`, `max_depth=4`.
 
-**Lý do:** ___
+**Lý do:** Bộ tham số này cho F1_score cao nhất (0.7182) trong 4 lần chạy thử nghiệm, vượt ngưỡng 0.65. Lần chạy có accuracy cao nhất (Lần 1: 0.8780) không trùng với lần có f1_score cao nhất, cho thấy accuracy không phản ánh đúng chất lượng trên dữ liệu mất cân bằng. Có đánh đổi giữa n_estimators và learning_rate: giảm learning_rate thường cần tăng n_estimators để duy trì hiệu suất, nhưng learning_rate cao hơn (0.15) kết hợp với n_estimators=150 cho kết quả tốt nhất trong thí nghiệm này.
 
 <!--
 Trả lời trong phần Lý do:
@@ -49,7 +50,7 @@ Trả lời trong phần Lý do:
 
 <!-- Khoảng 120 - 150 từ. -->
 
-___
+Tập dữ liệu có phân bố lớp mất cân bằng với chỉ 24.8% mẫu thuộc lớp thu nhập cao (>50K). Một mô hình vô dụng luôn trả lời "thu nhập thấp" vẫn đạt accuracy 0.752, gây hiểu nhầm về chất lượng thực tế. F1_score của lớp dương đo lường khả năng bắt được các trường hợp thu nhập cao, điều mà accuracy không phản ánh. Không dùng average="weighted" hay average="macro" vì các giá trị này bị lớp đa số kéo lên cao, làm mất ý nghĩa của ngưỡng chất lượng. Ngưỡng 0.65 trên f1_score đảm bảo mô hình thực sự học được các đặc điểm của lớp thiểu số quan trọng.
 
 <!--
 Cần nêu được:

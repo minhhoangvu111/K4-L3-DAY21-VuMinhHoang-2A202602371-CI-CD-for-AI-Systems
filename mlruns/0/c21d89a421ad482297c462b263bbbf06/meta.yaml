@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/AI%20VinUni/Lab/K4-L3-DAY21-VuMinhHoang-2A202602371-CI-CD-for-AI-Systems/mlruns/0/c21d89a421ad482297c462b263bbbf06/artifacts
+end_time: 1791384298135
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c21d89a421ad482297c462b263bbbf06
+run_name: hilarious-stag-14
+run_uuid: c21d89a421ad482297c462b263bbbf06
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791384284786
+status: 3
+tags: []
+user_id: Admin

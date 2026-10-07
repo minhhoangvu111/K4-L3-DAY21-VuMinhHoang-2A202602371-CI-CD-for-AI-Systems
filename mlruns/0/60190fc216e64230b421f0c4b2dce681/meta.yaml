@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/AI%20VinUni/Lab/K4-L3-DAY21-VuMinhHoang-2A202602371-CI-CD-for-AI-Systems/mlruns/0/60190fc216e64230b421f0c4b2dce681/artifacts
+end_time: 1791382720075
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 60190fc216e64230b421f0c4b2dce681
+run_name: clean-tern-552
+run_uuid: 60190fc216e64230b421f0c4b2dce681
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791382695318
+status: 3
+tags: []
+user_id: Admin
